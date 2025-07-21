@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokatani API Tester</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-cloud"></i> Lokascale API Tester</h1>
+                <p>This site is still under development</p>
+            </div>
+        </header>
+
+        <!-- Configuration Panel -->
+        <div class="endpoint-category">
+            <h2><i class="fas fa-cog"></i> Configuration</h2>
+            <div style="margin-bottom: 15px; padding: 10px; background: #fffbe7; border-radius: 8px; border-left: 4px solid #f7941e;">
+                <strong>Note:</strong> No need to input any URL here, the base URL is already fixed.
+            </div>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label for="baseUrl">Base URL:</label>
+                    <input type="text" id="baseUrl" placeholder="https://your-backend-url.com" value="https://flask-backend-207122022079.asia-southeast2.run.app">
+                </div>
+            </div>
+        </div>
+
+        <!-- Login Panel -->
+        <div class="endpoint-category">
+            <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+            <div style="margin-bottom: 15px; padding: 10px; background: #fffbe7; border-radius: 8px; border-left: 4px solid #f7941e;">
+                <strong>Note:</strong> Just click login.
+            </div>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="config-grid">
+                    <div class="config-item">
+                        <label for="loginEmail">Email:</label>
+                        <input type="text" id="loginEmail" placeholder="safina.ayu.rasya.tik22@mhsw.pnj.ac.idm" value="safina.ayu.rasya.tik22@mhsw.pnj.ac.id" autocomplete="username">
+                    </div>
+                    <div class="config-item">
+                        <label for="loginPassword">Password:</label>
+                        <input type="password" id="loginPassword" placeholder="Lokatani0" value="Lokatani0" autocomplete="current-password">
+                        <button type="button" class="toggle-password" onclick="togglePassword('loginPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="test-btn" style="margin-top: 25px;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+            </form>
+            <div id="authIndicator" style="margin-top: 15px;"></div>
+        </div>
+
+        <!-- Debug Panel -->
+        <div class="debug-panel" id="debugPanel">
+            <div class="debug-header">
+                <h3><i class="fas fa-bug"></i> Debug Console</h3>
+                <button onclick="clearDebug()" class="clear-btn">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+            <div class="debug-content" id="debugContent">
+                <div class="debug-item info">
+                    <span class="timestamp">[System]</span>
+                    <span class="message">API Tester initialized successfully</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Start Weighing Container -->
+        <div class="endpoint-category">
+            <h2><i class="fas fa-balance-scale"></i> Start Weighing</h2>
+            
+            <!-- Initiate Batch -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/weighing/initiate</span>
+                    <span class="description">Initiate new weighing batch/session</span>
+                    <span class="auth-required firebase">🔐 Firebase</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Session Type:</label>
+                        <select id="initSessionType">
+                            <option value="rompes">rompes</option>
+                            <option value="product">product</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="vegetableTypeGroup" style="display: none;">
+                        <label>Vegetable Type (for rompes):</label>
+                        <select id="vegetableType">
+                            <option value="kale">kale</option>
+                            <option value="bayam merah">bayam merah</option>
+                        </select>
+                    </div>
+                    <button onclick="initiateWeighingSession()" class="test-btn">
+                        <i class="fas fa-play"></i> Initiate
+                    </button>
+                </div>
+            </div>
+
+            <!-- Send Weight Data -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/iot/weight</span>
+                    <span class="description">Send weight data (Use session_id from initiated batch)</span>
+                    <span class="auth-required api">🔑 API Key</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Weight Data (JSON):</label>
+                        <textarea id="weightData" placeholder='{"device_id": "scale_001", "weight": 1.25, "unit": "kg", "session_id": "SESSION_ID_HERE"}' rows="4"></textarea>
+                    </div>
+                    <button onclick="sendWeightData()" class="test-btn">
+                        <i class="fas fa-play"></i> Send
+                    </button>
+                </div>
+            </div>
+
+            <!-- Identify Photo -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/ml/identify-vegetable</span>
+                    <span class="description">Upload image for vegetable identification (Use session_id from initiated batch)</span>
+                    <span class="auth-required firebase">🔐 Firebase</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Image File:</label>
+                        <input type="file" id="imageFile" accept="image/*">
+                    </div>
+                    <div class="form-group">
+                        <label>Session ID:</label>
+                        <input type="text" id="mlSessionId" placeholder="SESSION_ID_HERE">
+                    </div>
+                    <button onclick="identifyVegetable()" class="test-btn">
+                        <i class="fas fa-play"></i> Identify
+                    </button>
+                </div>
+            </div>
+
+            <!-- Complete Weighing Session (optional, implement the JS if your backend supports it) -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="path">/api/weighing/complete</span>
+                    <span class="description">Complete weighing session (Use session_id from initiated batch)</span>
+                    <span class="auth-required firebase">🔐 Firebase</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Session ID:</label>
+                        <input type="text" id="completeSessionId" placeholder="SESSION_ID_HERE">
+                    </div>
+                    <button onclick="completeWeighingSession()" class="test-btn">
+                        <i class="fas fa-play"></i> Complete
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Side Features Container -->
+        <div class="endpoint-category">
+            <h2><i class="fas fa-cogs"></i> Side Features</h2>
+            
+            <!-- Get Active Session ID -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/iot/active-session</span>
+                    <span class="description">Get active weighing session ID</span>
+                    <span class="auth-required api">🔑 API Key</span>
+                </div>
+                <div class="endpoint-body">
+                    <button onclick="getActiveSession()" class="test-btn">
+                        <i class="fas fa-play"></i> Get Active Session
+                    </button>
+                </div>
+            </div>
+
+            <!-- Get User Weighing History -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/weighing/history</span>
+                    <span class="description">Get user weighing session history</span>
+                    <span class="auth-required firebase">🔐 Firebase</span>
+                </div>
+                <div class="endpoint-body">
+                    <button onclick="getWeighingHistory()" class="test-btn">
+                        <i class="fas fa-play"></i> Get History
+                    </button>
+                </div>
+            </div>
+
+            <!-- Get Specific Session ID History -->
+            <div class="endpoint-card">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="path">/api/weighing/{session_id}</span>
+                    <span class="description">Get specific weighing session by session ID</span>
+                    <span class="auth-required firebase">🔐 Firebase</span>
+                </div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Session ID:</label>
+                        <input type="text" id="sessionId" placeholder="SESSION_ID_HERE">
+                    </div>
+                    <button onclick="getWeighingSession()" class="test-btn">
+                        <i class="fas fa-play"></i> Get Session
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Response Panel -->
+        <div class="response-panel" id="responsePanel">
+            <div class="response-header">
+                <h3><i class="fas fa-terminal"></i> Response</h3>
+                <div class="response-controls">
+                    <button onclick="copyResponse()" class="copy-btn" title="Copy response">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button onclick="clearResponse()" class="clear-btn" title="Clear response">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="response-content" id="responseContent">
+                <div class="no-response">
+                    <i class="fas fa-info-circle"></i>
+                    No response yet. Test an endpoint to see results here.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        // Show/hide vegetable type based on session type
+        document.addEventListener('DOMContentLoaded', function() {
+            var sessionType = document.getElementById('initSessionType');
+            var vegGroup = document.getElementById('vegetableTypeGroup');
+            sessionType.addEventListener('change', function() {
+                if (sessionType.value === 'rompes') {
+                    vegGroup.style.display = '';
+                } else {
+                    vegGroup.style.display = 'none';
+                }
+            });
+            // Trigger once on load
+            if (sessionType.value === 'rompes') {
+                vegGroup.style.display = '';
+            } else {
+                vegGroup.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
