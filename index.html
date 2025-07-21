@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lokatani API Tester</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-cloud"></i> Lokatani API Tester</h1>
+                <p>Test your IoT Weight and Image Management Backend API endpoints</p>
+            </div>
+        </header>
+
+        <!-- Configuration Panel -->
+        <div class="config-panel">
+            <h2><i class="fas fa-cog"></i> Configuration</h2>
+            <div class="config-grid">
+                <div class="config-item">
+                    <label for="baseUrl">Base URL:</label>
+                    <input type="text" id="baseUrl" placeholder="https://your-backend-url.com" value="http://localhost:5000">
+                </div>
+                <div class="config-item">
+                    <label for="apiKey">IoT API Key:</label>
+                    <input type="password" id="apiKey" placeholder="Enter your IoT API key">
+                    <button type="button" class="toggle-password" onclick="togglePassword('apiKey')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="config-item">
+                    <label for="firebaseToken">Firebase Token:</label>
+                    <input type="password" id="firebaseToken" placeholder="Enter your Firebase ID token">
+                    <button type="button" class="toggle-password" onclick="togglePassword('firebaseToken')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Panel -->
+        <div class="debug-panel" id="debugPanel">
+            <div class="debug-header">
+                <h3><i class="fas fa-bug"></i> Debug Console</h3>
+                <button onclick="clearDebug()" class="clear-btn">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+            <div class="debug-content" id="debugContent">
+                <div class="debug-item info">
+                    <span class="timestamp">[System]</span>
+                    <span class="message">API Tester initialized successfully</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Endpoints -->
+        <div class="endpoints-container">
+            
+            <!-- General Endpoints -->
+            <div class="endpoint-category">
+                <h2><i class="fas fa-heartbeat"></i> General</h2>
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/</span>
+                        <span class="description">Health check</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <button onclick="testHealthCheck()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Authentication Endpoints -->
+            <div class="endpoint-category">
+                <h2><i class="fas fa-user-shield"></i> Authentication & User Profile</h2>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/auth/profile/{user_id}</span>
+                        <span class="description">Get user profile</span>
+                        <span class="auth-required firebase">🔐 Firebase</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>User ID:</label>
+                            <input type="text" id="getUserId" placeholder="Enter Firebase UID">
+                        </div>
+                        <button onclick="getUserProfile()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method put">PUT</span>
+                        <span class="path">/api/auth/profile</span>
+                        <span class="description">Update user profile</span>
+                        <span class="auth-required firebase">🔐 Firebase</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>Profile Data (JSON):</label>
+                            <textarea id="profileData" placeholder='{"name": "John Doe", "email": "john@example.com"}' rows="3"></textarea>
+                        </div>
+                        <button onclick="updateUserProfile()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weighing Session Endpoints -->
+            <div class="endpoint-category">
+                <h2><i class="fas fa-weight-hanging"></i> Weighing Sessions</h2>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/weighing/history</span>
+                        <span class="description">Get weighing session history</span>
+                        <span class="auth-required firebase">🔐 Firebase</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <button onclick="getWeighingHistory()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/weighing/{session_id}</span>
+                        <span class="description">Get specific weighing session</span>
+                        <span class="auth-required firebase">🔐 Firebase</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>Session ID:</label>
+                            <input type="text" id="sessionId" placeholder="Enter session ID">
+                        </div>
+                        <button onclick="getWeighingSession()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- IoT Device Endpoints -->
+            <div class="endpoint-category">
+                <h2><i class="fas fa-microchip"></i> IoT Device Communication</h2>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/iot/weight</span>
+                        <span class="description">Send weight data</span>
+                        <span class="auth-required api">🔑 API Key</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>Weight Data (JSON):</label>
+                            <textarea id="weightData" placeholder='{"device_id": "scale_001", "weight": 1.25, "unit": "kg", "session_id": "session_123"}' rows="4"></textarea>
+                        </div>
+                        <button onclick="sendWeightData()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method get">GET</span>
+                        <span class="path">/api/iot/active-session</span>
+                        <span class="description">Get active weighing session</span>
+                        <span class="auth-required api">🔑 API Key</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <button onclick="getActiveSession()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/iot/status</span>
+                        <span class="description">Send device status</span>
+                        <span class="auth-required api">🔑 API Key</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>Status Data (JSON):</label>
+                            <textarea id="statusData" placeholder='{"device_id": "scale_001", "status": "online", "battery": 85, "signal_strength": "strong"}' rows="4"></textarea>
+                        </div>
+                        <button onclick="sendDeviceStatus()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ML Endpoints -->
+            <div class="endpoint-category">
+                <h2><i class="fas fa-robot"></i> Machine Learning</h2>
+                
+                <div class="endpoint-card">
+                    <div class="endpoint-header">
+                        <span class="method post">POST</span>
+                        <span class="path">/api/ml/identify-vegetable</span>
+                        <span class="description">Upload image for vegetable identification</span>
+                        <span class="auth-required firebase">🔐 Firebase</span>
+                    </div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>Image File:</label>
+                            <input type="file" id="imageFile" accept="image/*">
+                        </div>
+                        <div class="form-group">
+                            <label>Session ID (Optional):</label>
+                            <input type="text" id="mlSessionId" placeholder="Optional session ID to link">
+                        </div>
+                        <button onclick="identifyVegetable()" class="test-btn">
+                            <i class="fas fa-play"></i> Test
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development Panel -->
+        <div class="config-panel" style="margin-top: 20px; border: 2px dashed #28a745;">
+            <h2><i class="fas fa-code"></i> Development Tools</h2>
+            <div class="config-grid">
+                <div class="config-item">
+                    <button onclick="DevHelpers.fillSampleData()" class="test-btn" style="background: #28a745;">
+                        <i class="fas fa-fill-drip"></i> Fill Sample Data
+                    </button>
+                </div>
+                <div class="config-item">
+                    <button onclick="DevHelpers.clearAllData()" class="test-btn" style="background: #dc3545;">
+                        <i class="fas fa-trash"></i> Clear All Data
+                    </button>
+                </div>
+                <div class="config-item">
+                    <button onclick="EnhancedConfig.validateAll()" class="test-btn" style="background: #007bff;">
+                        <i class="fas fa-check-circle"></i> Validate Config
+                    </button>
+                </div>
+                <div class="config-item">
+                    <button onclick="quickTestAuth()" class="test-btn" style="background: #fd7e14;">
+                        <i class="fas fa-user-shield"></i> Quick Auth Test
+                    </button>
+                </div>
+                <div class="config-item">
+                    <button onclick="testHealthCheck()" class="test-btn" style="background: #20c997;">
+                        <i class="fas fa-heartbeat"></i> Quick Health Check
+                    </button>
+                </div>
+                <div class="config-item">
+                    <button onclick="AuthUI.showLoginModal()" class="test-btn" style="background: #6f42c1;">
+                        <i class="fas fa-sign-in-alt"></i> Mock Login
+                    </button>
+                </div>
+            </div>
+            <div style="margin-top: 15px; padding: 10px; background: rgba(40, 167, 69, 0.1); border-radius: 5px; font-size: 14px;">
+                <strong>🚀 Keyboard Shortcuts:</strong><br>
+                • <kbd>Ctrl+Shift+F</kbd>: Fill sample data<br>
+                • <kbd>Ctrl+Shift+X</kbd>: Clear all data<br>
+                • <kbd>Ctrl+Shift+V</kbd>: Validate configuration<br>
+                • <kbd>Ctrl+Enter</kbd>: Quick health check<br>
+                • <kbd>Ctrl+Shift+C</kbd>: Clear debug console<br>
+                • <kbd>Ctrl+Shift+R</kbd>: Clear response panel
+            </div>
+        </div>
+
+        <!-- Response Panel -->
+        <div class="response-panel" id="responsePanel">
+            <div class="response-header">
+                <h3><i class="fas fa-terminal"></i> Response</h3>
+                <div class="response-controls">
+                    <button onclick="copyResponse()" class="copy-btn" title="Copy response">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button onclick="clearResponse()" class="clear-btn" title="Clear response">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="response-content" id="responseContent">
+                <div class="no-response">
+                    <i class="fas fa-info-circle"></i>
+                    No response yet. Test an endpoint to see results here.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
