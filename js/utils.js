@@ -63,17 +63,18 @@ const Config = {
         };
         
         if (authType === 'firebase') {
-            const token = Config.get('firebaseToken');
+            // Try DOM, then FirebaseAuth, then localStorage
+            let token = Config.get('firebaseToken');
+            if (!token && window.FirebaseAuth && window.FirebaseAuth.firebaseToken) {
+                token = window.FirebaseAuth.firebaseToken;
+            }
+            if (!token) {
+                token = Storage.load('firebaseToken');
+            }
             if (!token) {
                 throw new Error('Firebase token is required for this endpoint');
             }
             headers['Authorization'] = `Bearer ${token}`;
-        } else if (authType === 'api') {
-            const apiKey = Config.get('apiKey');
-            if (!apiKey) {
-                throw new Error('API key is required for this endpoint');
-            }
-            headers['X-API-Key'] = apiKey;
         }
         
         return headers;

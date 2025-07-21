@@ -4,67 +4,67 @@
 async function makeApiRequest(endpoint, options = {}) {
     const startTime = Date.now();
     const baseUrl = Config.get('baseUrl');
-    
+
     if (!Config.validate()) {
         throw new Error('Invalid configuration');
     }
-    
+
     const url = `${baseUrl.replace(/\/$/, '')}${endpoint}`;
     Debug.info(`Making ${options.method || 'GET'} request to: ${url}`);
-    
+
     const defaultOptions = {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
         }
     };
-    
+
     const finalOptions = { ...defaultOptions, ...options };
-    
+
     try {
         Debug.info(`Request headers: ${JSON.stringify(finalOptions.headers, null, 2)}`);
         if (finalOptions.body) {
             Debug.info(`Request body: ${finalOptions.body}`);
         }
-        
+
         const response = await fetch(url, finalOptions);
         const responseTime = Date.now() - startTime;
-        
+
         Debug.info(`Response status: ${response.status} ${response.statusText}`);
         Debug.info(`Response time: ${responseTime}ms`);
-        
+
         let responseData;
         const contentType = response.headers.get('content-type');
-        
+
         if (contentType && contentType.includes('application/json')) {
             responseData = await response.json();
         } else {
             responseData = await response.text();
         }
-        
+
         Debug.info(`Response data: ${JSON.stringify(responseData, null, 2)}`);
-        
+
         ResponseDisplay.show(responseData, response.status, responseTime);
-        
+
         if (!response.ok) {
-            const errorMessage = typeof responseData === 'object' && responseData.error 
-                ? responseData.error 
+            const errorMessage = typeof responseData === 'object' && responseData.error
+                ? responseData.error
                 : `HTTP ${response.status}: ${response.statusText}`;
             throw new Error(errorMessage);
         }
-        
+
         return { data: responseData, status: response.status, responseTime };
-        
+
     } catch (error) {
         const responseTime = Date.now() - startTime;
         Debug.error(`Request failed: ${error.message}`);
-        
+
         if (error.name === 'TypeError' && error.message.includes('fetch')) {
             showNotification('Network error. Check if the server is running and the URL is correct.', 'error');
         } else {
             showNotification(error.message, 'error');
         }
-        
+
         throw error;
     }
 }
@@ -73,7 +73,7 @@ async function makeApiRequest(endpoint, options = {}) {
 async function testHealthCheck() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         Debug.info('Testing health check endpoint');
         const result = await makeApiRequest('/');
@@ -87,78 +87,53 @@ async function testHealthCheck() {
     }
 }
 
-// Authentication & User Profile Functions
-
-// Get User Profile - GET /api/auth/profile/{user_id}
-async function getUserProfile() {
-    const button = event.target;
-    setLoadingState(button, true);
-    
-    try {
-        const userId = Config.get('getUserId');
-        Validator.required(userId, 'User ID');
-        
-        Debug.info(`Getting user profile for ID: ${userId}`);
-        
-        const headers = Config.getHeaders('firebase');
-        const result = await makeApiRequest(`/api/auth/profile/${userId}`, {
-            headers
-        });
-        
-        showNotification('User profile retrieved successfully!', 'success');
-        Debug.success(`User profile retrieved for: ${userId}`);
-        return result;
-    } catch (error) {
-        Debug.error(`Get user profile failed: ${error.message}`);
-    } finally {
-        setLoadingState(button, false);
-    }
-}
-
-// Update User Profile - PUT /api/auth/profile
-async function updateUserProfile() {
-    const button = event.target;
-    setLoadingState(button, true);
-    
-    try {
-        const profileData = Config.get('profileData');
-        Validator.required(profileData, 'Profile Data');
-        Validator.json(profileData, 'Profile Data');
-        
-        Debug.info('Updating user profile');
-        
-        const headers = Config.getHeaders('firebase');
-        const result = await makeApiRequest('/api/auth/profile', {
-            method: 'PUT',
-            headers,
-            body: profileData
-        });
-        
-        showNotification('User profile updated successfully!', 'success');
-        Debug.success('User profile updated');
-        return result;
-    } catch (error) {
-        Debug.error(`Update user profile failed: ${error.message}`);
-    } finally {
-        setLoadingState(button, false);
-    }
-}
-
 // Weighing Session Functions
+
+// Initiate Weighing Session - POST /api/weighing/initiate
+async function initiateWeighingSession() {
+    const button = event.target;
+    setLoadingState(button, true);
+
+    try {
+        const sessionType = document.getElementById('initSessionType').value || 'rompes';
+        Debug.info(`Initiating new weighing session with type: ${sessionType}`);
+
+        const body = JSON.stringify({ session_type: sessionType });
+        const headers = Config.getHeaders('firebase');
+        const result = await makeApiRequest('/api/weighing/initiate', {
+            method: 'POST',
+            headers,
+            body
+        });
+
+        showNotification('Weighing session initiated!', 'success');
+        Debug.success(`Session initiated: ${JSON.stringify(result.data)}`);
+
+        // Optionally, display or copy the session_id for user convenience
+        if (result.data && result.data.session_id) {
+            showNotification(`Session ID: ${result.data.session_id}`, 'info');
+        }
+        return result;
+    } catch (error) {
+        Debug.error(`Initiate weighing session failed: ${error.message}`);
+    } finally {
+        setLoadingState(button, false);
+    }
+}
 
 // Get Weighing History - GET /api/weighing/history
 async function getWeighingHistory() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         Debug.info('Getting weighing session history');
-        
+
         const headers = Config.getHeaders('firebase');
         const result = await makeApiRequest('/api/weighing/history', {
             headers
         });
-        
+
         showNotification('Weighing history retrieved successfully!', 'success');
         Debug.success('Weighing history retrieved');
         return result;
@@ -173,18 +148,18 @@ async function getWeighingHistory() {
 async function getWeighingSession() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         const sessionId = Config.get('sessionId');
         Validator.required(sessionId, 'Session ID');
-        
+
         Debug.info(`Getting weighing session: ${sessionId}`);
-        
+
         const headers = Config.getHeaders('firebase');
         const result = await makeApiRequest(`/api/weighing/${sessionId}`, {
             headers
         });
-        
+
         showNotification('Weighing session retrieved successfully!', 'success');
         Debug.success(`Weighing session retrieved: ${sessionId}`);
         return result;
@@ -201,21 +176,22 @@ async function getWeighingSession() {
 async function sendWeightData() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         const weightData = Config.get('weightData');
         Validator.required(weightData, 'Weight Data');
         Validator.json(weightData, 'Weight Data');
-        
+
         Debug.info('Sending weight data to IoT endpoint');
-        
-        const headers = Config.getHeaders('api');
+
+        // No API key needed in headers for frontend, backend handles it
+        const headers = { 'Content-Type': 'application/json' };
         const result = await makeApiRequest('/api/iot/weight', {
             method: 'POST',
             headers,
             body: weightData
         });
-        
+
         showNotification('Weight data sent successfully!', 'success');
         Debug.success('Weight data sent to IoT endpoint');
         return result;
@@ -230,15 +206,16 @@ async function sendWeightData() {
 async function getActiveSession() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         Debug.info('Getting active weighing session from IoT endpoint');
-        
-        const headers = Config.getHeaders('api');
+
+        // No API key needed in headers for frontend, backend handles it
+        const headers = {};
         const result = await makeApiRequest('/api/iot/active-session', {
             headers
         });
-        
+
         showNotification('Active session retrieved successfully!', 'success');
         Debug.success('Active session retrieved from IoT endpoint');
         return result;
@@ -253,21 +230,22 @@ async function getActiveSession() {
 async function sendDeviceStatus() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         const statusData = Config.get('statusData');
         Validator.required(statusData, 'Status Data');
         Validator.json(statusData, 'Status Data');
-        
+
         Debug.info('Sending device status to IoT endpoint');
-        
-        const headers = Config.getHeaders('api');
+
+        // No API key needed in headers for frontend, backend handles it
+        const headers = { 'Content-Type': 'application/json' };
         const result = await makeApiRequest('/api/iot/status', {
             method: 'POST',
             headers,
             body: statusData
         });
-        
+
         showNotification('Device status sent successfully!', 'success');
         Debug.success('Device status sent to IoT endpoint');
         return result;
@@ -284,35 +262,35 @@ async function sendDeviceStatus() {
 async function identifyVegetable() {
     const button = event.target;
     setLoadingState(button, true);
-    
+
     try {
         const imageFile = document.getElementById('imageFile');
         const sessionId = Config.get('mlSessionId');
-        
+
         Validator.file(imageFile, 'Image File');
-        
+
         Debug.info('Uploading image for vegetable identification');
-        
+
         const formData = new FormData();
         formData.append('image', imageFile.files[0]);
-        
+
         if (sessionId && sessionId.trim() !== '') {
             formData.append('session_id', sessionId.trim());
             Debug.info(`Linking to session ID: ${sessionId}`);
         }
-        
+
         const headers = Config.getHeaders('firebase');
         // Remove Content-Type header for FormData (browser will set it with boundary)
         delete headers['Content-Type'];
-        
+
         Debug.info(`Uploading file: ${imageFile.files[0].name} (${formatFileSize(imageFile.files[0].size)})`);
-        
+
         const result = await makeApiRequest('/api/ml/identify-vegetable', {
             method: 'POST',
             headers,
             body: formData
         });
-        
+
         showNotification('Vegetable identification completed successfully!', 'success');
         Debug.success('Vegetable identification completed');
         return result;
@@ -326,13 +304,13 @@ async function identifyVegetable() {
 // Utility function to test all endpoints sequentially
 async function testAllEndpoints() {
     Debug.info('Starting comprehensive API test...');
-    
+
     const tests = [
         { name: 'Health Check', func: testHealthCheck },
         { name: 'Get Weighing History', func: getWeighingHistory },
         { name: 'Get Active Session', func: getActiveSession }
     ];
-    
+
     for (const test of tests) {
         try {
             Debug.info(`Running test: ${test.name}`);
@@ -342,6 +320,6 @@ async function testAllEndpoints() {
             Debug.error(`Test failed - ${test.name}: ${error.message}`);
         }
     }
-    
+
     Debug.info('Comprehensive API test completed');
 }
