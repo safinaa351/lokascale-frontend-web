@@ -19,8 +19,11 @@
         </header>
 
         <!-- Configuration Panel -->
-        <div class="config-panel">
+        <div class="endpoint-category">
             <h2><i class="fas fa-cog"></i> Configuration</h2>
+            <div style="margin-bottom: 15px; padding: 10px; background: #fffbe7; border-radius: 8px; border-left: 4px solid #f7941e;">
+                <strong>Note:</strong> No need to input any URL here, the base URL is already fixed.
+            </div>
             <div class="config-grid">
                 <div class="config-item">
                     <label for="baseUrl">Base URL:</label>
@@ -30,16 +33,16 @@
         </div>
 
         <!-- Login Panel -->
-        <div class="config-panel">
+        <div class="endpoint-category">
             <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
             <div style="margin-bottom: 15px; padding: 10px; background: #fffbe7; border-radius: 8px; border-left: 4px solid #f7941e;">
-                <strong>Note:</strong> Please input <b>"safina351@gmail.com"</b> as email and <b>"Lokatani0"</b> as password since this is an actual existing account on Firebase.
+                <strong>Note:</strong> Just click login.
             </div>
             <form id="loginForm" onsubmit="handleLogin(event)">
                 <div class="config-grid">
                     <div class="config-item">
                         <label for="loginEmail">Email:</label>
-                        <input type="text" id="loginEmail" placeholder="safina351@gmail.com" value="safina351@gmail.com" autocomplete="username">
+                        <input type="text" id="loginEmail" placeholder="safina.ayu.rasya.tik22@mhsw.pnj.ac.idm" value="safina.ayu.rasya.tik22@mhsw.pnj.ac.id" autocomplete="username">
                     </div>
                     <div class="config-item">
                         <label for="loginPassword">Password:</label>
