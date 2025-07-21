@@ -217,47 +217,6 @@ const TokenManager = {
     }
 };
 
-// Quick auth testing functions
-function quickTestAuth() {
-    Debug.info('Quick auth test...');
-    
-    if (!FirebaseAuth.isAuthenticated()) {
-        showNotification('Please log in first to test auth endpoints', 'warning');
-        AuthUI.showLoginModal();
-        return;
-    }
-    
-    // Test auth endpoints
-    setTimeout(() => {
-        if (Config.get('getUserId')) {
-            getUserProfile();
-        } else {
-            Debug.warning('User ID not set for profile test');
-        }
-    }, 1000);
-    
-    setTimeout(() => {
-        getWeighingHistory();
-    }, 3000);
-}
-
-// Authentication status checker
-function checkAuthStatus() {
-    const isAuth = FirebaseAuth.isAuthenticated();
-    const isValid = FirebaseAuth.isTokenValid();
-    const hasApiKey = Config.get('apiKey').trim() !== '';
-    
-    Debug.info(`Auth Status - Authenticated: ${isAuth}, Token Valid: ${isValid}, Has API Key: ${hasApiKey}`);
-    
-    const status = {
-        firebase: isAuth && isValid,
-        api: hasApiKey,
-        user: FirebaseAuth.getCurrentUser()
-    };
-    
-    return status;
-}
-
 // Initialize auth when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     Debug.info('Initializing authentication system...');
@@ -295,9 +254,3 @@ document.addEventListener('DOMContentLoaded', () => {
     
     Debug.success('Authentication system initialized');
 });
-
-// Export auth functions globally
-window.FirebaseAuth = FirebaseAuth;
-window.AuthUI = AuthUI;
-window.quickTestAuth = quickTestAuth;
-window.checkAuthStatus = checkAuthStatus;

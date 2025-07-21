@@ -324,18 +324,6 @@ body {
     word-wrap: break-word;
 }
 
-/* Enhanced styling for development tools and validation */
-
-/* Development Panel Specific Styles */
-.config-panel[style*="dashed"] {
-    background: rgba(40, 167, 69, 0.05);
-    border-color: #28a745 !important;
-}
-
-.config-panel[style*="dashed"] h2 {
-    color: #28a745;
-}
-
 /* Form Validation States */
 .form-group input.error,
 .form-group textarea.error {
@@ -359,53 +347,6 @@ body {
     background: rgba(220, 53, 69, 0.1);
     border-radius: 4px;
     border-left: 3px solid #dc3545;
-}
-
-/* Enhanced button styles */
-.test-btn[style*="background: #28a745"] {
-    background: #28a745 !important;
-    color: white;
-}
-
-.test-btn[style*="background: #dc3545"] {
-    background: #dc3545 !important;
-    color: white;
-}
-
-.test-btn[style*="background: #007bff"] {
-    background: #007bff !important;
-    color: white;
-}
-
-.test-btn[style*="background: #fd7e14"] {
-    background: #fd7e14 !important;
-    color: white;
-}
-
-.test-btn[style*="background: #20c997"] {
-    background: #20c997 !important;
-    color: white;
-}
-
-.test-btn[style*="background: #6f42c1"] {
-    background: #6f42c1 !important;
-    color: white;
-}
-
-/* Keyboard shortcut styling */
-kbd {
-    background-color: #f8f9fa;
-    border: 1px solid #dee2e6;
-    border-radius: 3px;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.2), inset 0 0 0 2px #fff;
-    color: #495057;
-    display: inline-block;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
-    font-size: 0.875em;
-    font-weight: 700;
-    line-height: 1;
-    padding: 2px 4px;
-    white-space: nowrap;
 }
 
 /* Auth status indicator */

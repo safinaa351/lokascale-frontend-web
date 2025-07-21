@@ -1,6 +1,6 @@
 # Lokatani API Tester
 
-A comprehensive frontend testing tool for the Lokatani IoT Weight and Image Management Backend API. This tool provides an intuitive interface to test all backend endpoints with proper authentication, debugging capabilities, and enhanced developer experience.
+A comprehensive frontend testing tool for the Lokatani IoT Weight and Image Management Backend API. This tool provides an intuitive interface to test all backend endpoints with proper authentication, debugging capabilities, and enhanced user experience.
 
 ## 🚀 Features
 
@@ -8,7 +8,6 @@ A comprehensive frontend testing tool for the Lokatani IoT Weight and Image Mana
 - **Dual Authentication Support**: Both Firebase Authentication and API Key authentication
 - **Real-time Debugging**: Comprehensive debug console with detailed request/response logging
 - **Form Validation**: Real-time validation for JSON data and configuration
-- **Developer Tools**: Quick sample data generation, configuration validation, and keyboard shortcuts
 - **Enhanced UX**: Loading states, notifications, collapsible sections, and responsive design
 - **Mock Authentication**: Built-in mock Firebase authentication for testing without actual Firebase setup
 
@@ -34,19 +33,8 @@ Set the backend server URL (e.g., `http://localhost:5000` or `https://your-backe
 - **Firebase Token**: Required for user-facing endpoints (`/api/auth/`, `/api/weighing/`, `/api/ml/`)
 - **API Key**: Required for IoT endpoints (`/api/iot/`)
 
-## 🎮 Development Tools
+## 🎮 Keyboard Shortcuts
 
-### Quick Actions
-- **Fill Sample Data**: Automatically populate all forms with realistic test data
-- **Clear All Data**: Reset all form fields
-- **Validate Config**: Check configuration validity
-- **Quick Auth Test**: Run authentication endpoint tests
-- **Mock Login**: Simulate Firebase authentication
-
-### Keyboard Shortcuts
-- `Ctrl+Shift+F`: Fill sample data
-- `Ctrl+Shift+X`: Clear all data
-- `Ctrl+Shift+V`: Validate configuration
 - `Ctrl+Enter`: Quick health check
 - `Ctrl+Shift+C`: Clear debug console
 - `Ctrl+Shift+R`: Clear response panel

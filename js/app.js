@@ -302,11 +302,6 @@ function setupKeyboardShortcuts() {
             event.preventDefault();
             clearResponse();
         }
-        
-        // Escape to stop all active requests (if implemented)
-        if (event.key === 'Escape' && AppState.activeRequests.size > 0) {
-            Debug.warning('Escape pressed - stopping active requests not implemented');
-        }
     });
     
     Debug.info('Keyboard shortcuts registered');
@@ -376,45 +371,6 @@ function autoSaveConfig() {
     }
 }
 
-// Quick test functions for rapid development
-function quickTestFirebaseEndpoints() {
-    Debug.info('Quick testing Firebase endpoints...');
-    
-    if (!Config.get('firebaseToken')) {
-        showNotification('Firebase token required for this test', 'warning');
-        return;
-    }
-    
-    // Test endpoints that require Firebase auth
-    const tests = [
-        () => getWeighingHistory(),
-        () => getUserProfile()
-    ];
-    
-    tests.forEach((test, index) => {
-        setTimeout(test, index * 2000); // Stagger requests
-    });
-}
-
-function quickTestIoTEndpoints() {
-    Debug.info('Quick testing IoT endpoints...');
-    
-    if (!Config.get('apiKey')) {
-        showNotification('API key required for this test', 'warning');
-        return;
-    }
-    
-    // Test endpoints that require API key
-    const tests = [
-        () => getActiveSession(),
-        () => sendDeviceStatus()
-    ];
-    
-    tests.forEach((test, index) => {
-        setTimeout(test, index * 2000); // Stagger requests
-    });
-}
-
 // Application health monitoring
 function checkAppHealth() {
     const issues = [];
@@ -448,8 +404,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Run health check every 30 seconds
     setInterval(checkAppHealth, 30000);
 });
-
-// Export functions for global access (if needed)
-window.AppState = AppState;
-window.quickTestFirebaseEndpoints = quickTestFirebaseEndpoints;
-window.quickTestIoTEndpoints = quickTestIoTEndpoints;
