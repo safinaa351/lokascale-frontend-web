@@ -23,8 +23,14 @@ async function makeApiRequest(endpoint, options = {}) {
 
     try {
         Debug.info(`Request headers: ${JSON.stringify(finalOptions.headers, null, 2)}`);
+        
+        // Handle FormData logging differently
         if (finalOptions.body) {
-            Debug.info(`Request body: ${finalOptions.body}`);
+            if (finalOptions.body instanceof FormData) {
+                Debug.info(`Request body: FormData with ${finalOptions.body.keys ? Array.from(finalOptions.body.keys()).join(', ') : 'file data'}`);
+            } else {
+                Debug.info(`Request body: ${finalOptions.body}`);
+            }
         }
 
         const response = await fetch(url, finalOptions);
@@ -148,15 +154,36 @@ async function identifyVegetable() {
 
     try {
         const imageFile = document.getElementById('imageFile');
-        if (!imageFile.files || imageFile.files.length === 0) throw new Error('Please select a file!');
+        if (!imageFile.files || imageFile.files.length === 0) {
+            throw new Error('Please select a file!');
+        }
+        
         const sessionId = Config.get('mlSessionId');
+        if (!sessionId || sessionId.trim() === '') {
+            throw new Error('Session ID is required!');
+        }
+
+        Debug.info(`Preparing file upload: ${imageFile.files[0].name}, Session ID: ${sessionId}`);
 
         const formData = new FormData();
-        formData.append('image', imageFile.files[0]);
-        if (sessionId) formData.append('session_id', sessionId);
+        formData.append('file', imageFile.files[0]);
+        formData.append('session_id', sessionId);
+
+        // Debug FormData contents
+        Debug.info('FormData contents:');
+        for (let [key, value] of formData.entries()) {
+            if (value instanceof File) {
+                Debug.info(`  ${key}: File(${value.name}, ${value.size} bytes, ${value.type})`);
+            } else {
+                Debug.info(`  ${key}: ${value}`);
+            }
+        }
 
         const headers = Config.getHeaders('firebase');
-        delete headers['Content-Type']; // Let browser set this
+        // Remove Content-Type to let browser set it with boundary for FormData
+        delete headers['Content-Type'];
+
+        Debug.info('Sending file to ML endpoint...');
 
         const result = await makeApiRequest('/api/ml/identify-vegetable', {
             method: 'POST',
@@ -169,6 +196,7 @@ async function identifyVegetable() {
         return result;
     } catch (error) {
         Debug.error(`Vegetable identification failed: ${error.message}`);
+        showNotification(`Identification failed: ${error.message}`, 'error');
     } finally {
         setLoadingState(button, false);
     }
