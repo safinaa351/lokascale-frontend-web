@@ -79,7 +79,7 @@ function setupFormPlaceholders() {
     const placeholders = {
         'sessionId': 'session_id_here',
         'weightData': JSON.stringify({
-            "weight (gram)": 250,
+            "weight": 250,
             "session_id": "session_id_here"
         }, null, 2),
         'statusData': JSON.stringify({
