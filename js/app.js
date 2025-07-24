@@ -77,13 +77,10 @@ function initializeUI() {
 // Setup form placeholders with realistic example data
 function setupFormPlaceholders() {
     const placeholders = {
-        'sessionId': 'session_2025_001',
+        'sessionId': 'session_id_here',
         'weightData': JSON.stringify({
-            "device_id": "scale_001",
-            "weight": 2.5,
-            "unit": "kg",
-            "timestamp": new Date().toISOString(),
-            "session_id": "session_2025_001"
+            "weight (gram)": 250,
+            "session_id": "session_id_here"
         }, null, 2),
         'statusData': JSON.stringify({
             "device_id": "scale_001",
@@ -92,7 +89,7 @@ function setupFormPlaceholders() {
             "signal_strength": -65,
             "timestamp": new Date().toISOString()
         }, null, 2),
-        'mlSessionId': 'session_2025_001'
+        'mlSessionId': 'session_id_here',
     };
 
     Object.entries(placeholders).forEach(([id, placeholder]) => {

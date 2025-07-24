@@ -1,3 +1,32 @@
+/* Header Logo Styles */
+.header-logo {
+    height: 48px;
+    width: auto;
+    margin-right: 15px;
+    vertical-align: middle;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s ease;
+}
+
+.header-logo:hover {
+    transform: scale(1.05);
+}
+
+/* Responsive logo sizing */
+@media (max-width: 768px) {
+    .header-logo {
+        height: 36px;
+        margin-right: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-logo {
+        height: 30px;
+        margin-right: 8px;
+    }
+}
+
 /* Endpoint Card Styles */
 .endpoint-card {
     background: #f8f9fa;
@@ -134,6 +163,7 @@
     font-family: inherit;
     transition: all 0.3s ease;
     background: #ffffff;
+    color: #2c3e50;
     resize: vertical;
 }
 

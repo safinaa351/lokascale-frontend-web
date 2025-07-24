@@ -13,7 +13,7 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1><i class="fas fa-cloud"></i> Lokascale API Tester</h1>
+                <h1><img src="assets/lokascale logo.png" alt="Lokascale Logo" class="header-logo"> Lokascale API Tester</h1>
                 <p>This site is still under development</p>
             </div>
         </header>
@@ -84,8 +84,8 @@
                 <div class="endpoint-header">
                     <span class="method post">POST</span>
                     <span class="path">/api/weighing/initiate</span>
-                    <span class="description">Initiate new weighing batch/session</span>
-                    <span class="auth-required firebase">🔐 Firebase</span>
+                    <span class="description">Initiate new weighing session</span>
+
                 </div>
                 <div class="endpoint-body">
                     <div class="form-group">
@@ -114,12 +114,12 @@
                     <span class="method post">POST</span>
                     <span class="path">/api/iot/weight</span>
                     <span class="description">Send weight data (Use session_id from initiated batch)</span>
-                    <span class="auth-required api">🔑 API Key</span>
+
                 </div>
                 <div class="endpoint-body">
                     <div class="form-group">
                         <label>Weight Data (JSON):</label>
-                        <textarea id="weightData" placeholder='{"device_id": "scale_001", "weight": 1.25, "unit": "kg", "session_id": "SESSION_ID_HERE"}' rows="4"></textarea>
+                        <textarea id="weightData" placeholder='{"weight (gram)": 250, "session_id": "session_id_here"}' rows="2"></textarea>
                     </div>
                     <button onclick="sendWeightData()" class="test-btn">
                         <i class="fas fa-play"></i> Send
@@ -133,7 +133,7 @@
                     <span class="method post">POST</span>
                     <span class="path">/api/ml/identify-vegetable</span>
                     <span class="description">Upload image for vegetable identification (Use session_id from initiated batch)</span>
-                    <span class="auth-required firebase">🔐 Firebase</span>
+
                 </div>
                 <div class="endpoint-body">
                     <div class="form-group">
@@ -142,7 +142,7 @@
                     </div>
                     <div class="form-group">
                         <label>Session ID:</label>
-                        <input type="text" id="mlSessionId" placeholder="SESSION_ID_HERE">
+                        <input type="text" id="mlSessionId" placeholder="session_id_here">
                     </div>
                     <button onclick="identifyVegetable()" class="test-btn">
                         <i class="fas fa-play"></i> Identify
@@ -156,12 +156,12 @@
                     <span class="method post">POST</span>
                     <span class="path">/api/weighing/complete</span>
                     <span class="description">Complete weighing session (Use session_id from initiated batch)</span>
-                    <span class="auth-required firebase">🔐 Firebase</span>
+
                 </div>
                 <div class="endpoint-body">
                     <div class="form-group">
                         <label>Session ID:</label>
-                        <input type="text" id="completeSessionId" placeholder="SESSION_ID_HERE">
+                        <input type="text" id="completeSessionId" placeholder="session_id_here">
                     </div>
                     <button onclick="completeWeighingSession()" class="test-btn">
                         <i class="fas fa-play"></i> Complete
@@ -180,7 +180,7 @@
                     <span class="method get">GET</span>
                     <span class="path">/api/iot/active-session</span>
                     <span class="description">Get active weighing session ID</span>
-                    <span class="auth-required api">🔑 API Key</span>
+
                 </div>
                 <div class="endpoint-body">
                     <button onclick="getActiveSession()" class="test-btn">
@@ -195,7 +195,7 @@
                     <span class="method get">GET</span>
                     <span class="path">/api/weighing/history</span>
                     <span class="description">Get user weighing session history</span>
-                    <span class="auth-required firebase">🔐 Firebase</span>
+
                 </div>
                 <div class="endpoint-body">
                     <button onclick="getWeighingHistory()" class="test-btn">
@@ -210,12 +210,12 @@
                     <span class="method get">GET</span>
                     <span class="path">/api/weighing/{session_id}</span>
                     <span class="description">Get specific weighing session by session ID</span>
-                    <span class="auth-required firebase">🔐 Firebase</span>
+
                 </div>
                 <div class="endpoint-body">
                     <div class="form-group">
                         <label>Session ID:</label>
-                        <input type="text" id="sessionId" placeholder="SESSION_ID_HERE">
+                        <input type="text" id="sessionId" placeholder="session_id_here">
                     </div>
                     <button onclick="getWeighingSession()" class="test-btn">
                         <i class="fas fa-play"></i> Get Session
